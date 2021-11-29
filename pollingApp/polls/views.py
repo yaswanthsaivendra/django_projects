@@ -1,24 +1,53 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse
-
-from polls.forms import QuestionForm
-from .models import Question
-
+from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import CreatePollForm
+from .models import Poll
 # Create your views here.
 
 def index(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    context = {'latest_question_list' : latest_question_list}
+    polls = Poll.objects.all()
+    context = {
+        'polls': polls
+    }
     return render(request, 'polls/index.html',context)
 
-def detail(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
-    form = QuestionForm()
+def create(request):
+    if request.method == 'POST':
+        form = CreatePollForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('polls:index')
+    else :
+        form = CreatePollForm()
+    context = {
+        'form' : form
+    }
+    return render(request, 'polls/create.html',context)
 
-    return render(request, 'polls/detail.html', {'question' : question, 'form' : form})
+def vote(request, poll_id):
+    poll = get_object_or_404(Poll, id=poll_id)
+    if request.method == 'POST':
+        selected_option = request.POST['poll']
+        if selected_option == 'option1':
+            poll.option_one_count += 1
+        elif selected_option == 'option2':
+            poll.option_two_count += 1
+        elif selected_option == 'option3':
+            poll.option_three_count += 1
+        else :
+            return HttpResponse(400, ' Invalid Form ')
+        poll.save()
+        return redirect('polls:results', poll.id)
+    context = {
+        'poll' : poll
+    }
+    return render(request, 'polls/vote.html',context)
 
-def results(request, question_id):
-    return HttpResponse(f"You're looking at results of question {question_id}")
+def results(request, poll_id):
+    poll = get_object_or_404(Poll, id=poll_id)
+    context = {
+        'poll' : poll
+    }
+    return render(request, 'polls/results.html',context)
 
-def vote(request, question_id):
-    return HttpResponse(f"You're voting on question {question_id}")
+

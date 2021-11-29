@@ -1,11 +1,10 @@
 from django.contrib import admin
-from .models import Question, Choice
+from .models import Poll
 from django.contrib.admin import ModelAdmin
 
 # Register your models here.
 
-class QuestionAdmin(ModelAdmin):
-    list_display = ['id', 'question_text']
+class PollAdmin(ModelAdmin):
+    list_display = ['id', 'question']
 
-admin.site.register(Question, QuestionAdmin)
-admin.site.register(Choice)
+admin.site.register(Poll, PollAdmin)

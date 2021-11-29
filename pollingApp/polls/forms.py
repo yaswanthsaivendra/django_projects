@@ -1,10 +1,13 @@
 from django import forms
-from django.db.models import fields
-from .models import Choice
+from .models import Poll
 
-
-class QuestionForm(forms.ModelForm):
+class CreatePollForm(forms.ModelForm):
     class Meta:
-        model = Choice
-        fields = ['choice_text' , 'votes']
-
+        model = Poll
+        fields = ['question', 'option_one', 'option_two', 'option_three']
+        widgets = {
+            'question' : forms.Textarea(attrs={'class' : 'form-control', 'rows' : 3}),
+            'option_one' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Enter option 1'}),
+            'option_two' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Enter option 2'}),
+            'option_three' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Enter option 3'}),
+        }
